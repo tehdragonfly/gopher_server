@@ -16,6 +16,8 @@ setup(
     packages=find_packages(),
     zip_safe=False,
     install_requires=[
+        "aioquic",
+        "cryptography",
         "zope.interface",
     ],
 )
