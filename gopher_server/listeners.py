@@ -2,7 +2,6 @@ import asyncio
 
 from aioquic.asyncio import serve
 from aioquic.quic.configuration import QuicConfiguration
-
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
@@ -48,4 +47,3 @@ async def quic_listener(application: Application, host: str, port: int,
         asyncio.ensure_future(handle_stream())
 
     await serve(host, port, configuration=configuration, stream_handler=stream_handler)
-

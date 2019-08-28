@@ -26,5 +26,10 @@ class Application:
             return b"3Internal server error.\t\terror.host\t0\r\n.\r\n"
 
         if isinstance(response, str):
-            return response.encode("utf-8") + b"\r\n.\r\n"
+            encoded_response = response.encode("utf-8")
+            encoded_response = encoded_response.replace(b"\n", b"\r\n")
+            if not encoded_response.endswith(b"\r\n"):
+                encoded_response += b"\r\n"
+            return encoded_response + b".\r\n"
+
         return response
