@@ -11,7 +11,11 @@ from gopher_server.application import Application
 
 
 async def tcp_listener(application: Application, host: str, port: int):
-    raise NotImplementedError
+    async def handle_connection(reader, writer):
+        data = await reader.readline()
+        writer.write(await application.dispatch(data))
+        writer.write_eof()
+    await asyncio.start_server(handle_connection, host, port)
 
 
 async def tcp_tls_listener(application: Application, host: str, port: int,
