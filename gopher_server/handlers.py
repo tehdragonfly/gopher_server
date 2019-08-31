@@ -1,6 +1,5 @@
 import os.path
 
-from dataclasses import dataclass
 from typing import Union
 from zope.interface import Interface, implementer
 
@@ -19,17 +18,21 @@ class IHandler(Interface):
 
 
 @implementer(IHandler)
-@dataclass
 class DirectoryHandler:
     """Serves files from a directory, as specified by `base_path`."""
-    base_path: str
+
+    def __init__(self, base_path):
+        self.base_path = os.path.abspath(base_path)
 
     def handle(self, selector: str) -> Union[str, bytes]:
+        # Remove leading slash because os.path.join regards it as a full path
+        # otherwise.
         if selector.startswith("/"):
             selector = selector[1:]
 
         file_path = os.path.abspath(os.path.join(self.base_path, selector))
 
+        # Don't allow breaking out of the base directory.
         if not file_path.startswith(self.base_path):
             raise NotFound
 
