@@ -1,6 +1,9 @@
 from dataclasses import dataclass
+from logging import getLogger
 
 from gopher_server.handlers import IHandler, NotFound
+
+log = getLogger(__name__)
 
 
 @dataclass
@@ -19,10 +22,11 @@ class Application:
             return b"3Bad selector.\t\terror.host\t0\r\n.\r\n"
 
         try:
-            response = self.handler.handle(decoded_selector)
+            response = await self.handler.handle(decoded_selector)
         except NotFound:
             return b"3Not found.\t\terror.host\t0\r\n.\r\n"
-        except Exception:
+        except Exception as e:
+            log.error("Caught exception:", exc_info=e)
             return b"3Internal server error.\t\terror.host\t0\r\n.\r\n"
 
         if isinstance(response, str):

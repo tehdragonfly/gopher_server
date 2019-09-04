@@ -1,4 +1,5 @@
 import os.path
+import re
 
 from typing import Union
 from zope.interface import Interface, implementer
@@ -9,7 +10,7 @@ class NotFound(Exception):
 
 
 class IHandler(Interface):
-    def handle(self, selector: str) -> Union[str, bytes]:
+    async def handle(self, selector: str) -> Union[str, bytes]:
         """
         Receives a selector as a string, and returns the response as either a
         a string (for text responses) or bytes (for binary responses).
@@ -24,7 +25,7 @@ class DirectoryHandler:
     def __init__(self, base_path):
         self.base_path = os.path.abspath(base_path)
 
-    def handle(self, selector: str) -> Union[str, bytes]:
+    async def handle(self, selector: str) -> Union[str, bytes]:
         # Remove leading slash because os.path.join regards it as a full path
         # otherwise.
         if selector.startswith("/"):
@@ -44,3 +45,27 @@ class DirectoryHandler:
 
         with open(file_path) as f:
             return f.read()
+
+
+@implementer(IHandler)
+class PatternHandler:
+    """Uses pattern matching to map selectors to view functions."""
+
+    def __init__(self):
+        self.patterns = []
+
+    async def handle(self, selector: str) -> Union[str, bytes]:
+        for pattern, func in self.patterns:
+            match = pattern.match(selector)
+            if match:
+                return func(selector, **match.groupdict())
+        raise NotFound
+
+    def register(self, pattern):
+        pattern = re.compile("^%s$" % pattern)
+
+        def f(func):
+            self.patterns.append((pattern, func))
+            return func
+
+        return f
