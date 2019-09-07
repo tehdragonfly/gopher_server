@@ -4,16 +4,19 @@ import re
 from typing import Union
 from zope.interface import Interface, implementer
 
+from gopher_server.menu import Menu
+
 
 class NotFound(Exception):
     pass
 
 
 class IHandler(Interface):
-    async def handle(self, selector: str) -> Union[str, bytes]:
+    async def handle(self, selector: str) -> Union[str, bytes, Menu]:
         """
         Receives a selector as a string, and returns the response as either a
-        a string (for text responses) or bytes (for binary responses).
+        a string (for text responses), bytes (for binary responses), or a Menu
+        object.
         """
         pass
 

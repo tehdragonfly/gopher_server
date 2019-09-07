@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from logging import getLogger
 
 from gopher_server.handlers import IHandler, NotFound
+from gopher_server.menu import Menu
 
 log = getLogger(__name__)
 
@@ -28,6 +29,9 @@ class Application:
         except Exception as e:
             log.error("Caught exception:", exc_info=e)
             return b"3Internal server error.\t\terror.host\t0\r\n.\r\n"
+
+        if isinstance(response, Menu):
+            response = response.serialize()
 
         if isinstance(response, str):
             encoded_response = response.encode("utf-8")

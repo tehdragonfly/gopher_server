@@ -3,6 +3,7 @@ from asyncio import get_event_loop
 from gopher_server.application import Application
 from gopher_server.handlers import PatternHandler
 from gopher_server.listeners import tcp_listener, quic_listener
+from gopher_server.menu import Menu, MenuItem
 
 
 handler = PatternHandler()
@@ -10,11 +11,11 @@ handler = PatternHandler()
 
 @handler.register("")
 def home(selector):
-    return "\r\n".join([
-        "ihello world example menu\t\terror.host\t0",
-        "0foo\thello/foo\tlocalhost\t7000",
-        "0bar\thello/bar\tlocalhost\t7000",
-        "0baz\thello/baz\tlocalhost\t7000",
+    return Menu([
+        MenuItem("i", "hello world example menu", "", "error.host", 0),
+        MenuItem("0", "foo", "hello/foo", "localhost", 7000),
+        MenuItem("0", "bar", "hello/bar", "localhost", 7000),
+        MenuItem("0", "baz", "hello/baz", "localhost", 7000),
     ])
 
 
