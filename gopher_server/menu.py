@@ -18,3 +18,11 @@ class MenuItem:
         return "%s%s\t%s\t%s\t%s" % (
             self.type, self.name, self.selector, self.host, self.port,
         )
+
+
+class InfoMenuItem:
+    def __init__(self, name):
+        self.name = name
+
+    def serialize(self):
+        return "i%s\t\terror.host\t0" % self.name
