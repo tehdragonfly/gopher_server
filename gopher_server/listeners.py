@@ -1,4 +1,5 @@
 import asyncio
+import ssl
 
 from aioquic.asyncio import serve
 from aioquic.quic.configuration import QuicConfiguration
@@ -19,7 +20,13 @@ async def tcp_listener(application: Application, host: str, port: int):
 
 async def tcp_tls_listener(application: Application, host: str, port: int,
                            certificate_path: str, private_key_path: str, password: str=None):
-    raise NotImplementedError
+    ssl_context = ssl.SSLContext(protocol=ssl.PROTOCOL_TLS)
+    ssl_context.load_cert_chain(certificate_path, private_key_path, password)
+    async def handle_connection(reader, writer):
+        data = await reader.readline()
+        writer.write(await application.dispatch(data))
+        writer.write_eof()
+    await asyncio.start_server(handle_connection, host, port, ssl=ssl_context)
 
 
 async def quic_listener(application: Application, host: str, port: int,
