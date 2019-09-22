@@ -20,4 +20,8 @@ setup(
         "cryptography",
         "zope.interface",
     ],
+    tests_require=[
+        "pytest",
+        "pytest-asyncio",
+    ],
 )
