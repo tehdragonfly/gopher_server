@@ -30,7 +30,8 @@ async def tcp_tls_listener(application: Application, host: str, port: int,
 
 
 async def quic_listener(application: Application, host: str, port: int,
-                        certificate_path: str, private_key_path: str, password: str=None):
+                        certificate_path: str, private_key_path: str, password: str=None,
+                        quic_configuration_args=None):
     with open(certificate_path, "rb") as f:
         certificate = x509.load_pem_x509_certificate(
             f.read(), backend=default_backend(),
@@ -44,6 +45,7 @@ async def quic_listener(application: Application, host: str, port: int,
         is_client=False,
         certificate=certificate,
         private_key=private_key,
+        **quic_configuration_args or {},
     )
 
     def stream_handler(reader, writer):
