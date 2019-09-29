@@ -14,6 +14,9 @@ API Documentation
 
 .. automodule:: gopher_server.handlers
 
+  .. autointerface:: IHandler
+     :members:
+
   .. autoclass:: DirectoryHandler
      :members:
 
