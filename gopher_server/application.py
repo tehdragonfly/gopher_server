@@ -9,9 +9,24 @@ log = getLogger(__name__)
 
 @dataclass
 class Application:
+    """
+    Core of the Gopher server application.
+
+    This class is responsible for the basic semantics of the Gopher protocol,
+    including decoding the selector line and encoding the response.
+
+    .. note:: The bytes<->string conversion uses UTF-8, but the Gopher RFC
+              specifies ASCII encoding. Some clients may have issues if you
+              use characters outside the ASCII range.
+    """
+
     handler: IHandler
 
     async def dispatch(self, selector: bytes) -> bytes:
+        """
+        Dispatches a request.
+        """
+
         try:
             decoded_selector = selector.decode("utf-8")
         except UnicodeDecodeError:

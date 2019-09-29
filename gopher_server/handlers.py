@@ -25,7 +25,7 @@ class IHandler(Interface):
 class DirectoryHandler:
     """Serves files from a directory, as specified by `base_path`."""
 
-    def __init__(self, base_path):
+    def __init__(self, base_path: str):
         self.base_path = os.path.abspath(base_path)
 
     async def handle(self, selector: str) -> Union[str, bytes]:
