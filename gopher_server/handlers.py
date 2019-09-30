@@ -12,6 +12,14 @@ class NotFound(Exception):
 
 
 class IHandler(Interface):
+    """
+    Interface for handler classes.
+
+    A handler is called by the :class:`Application <gopher_server.application.Application>`,
+    and is responsible for generating the response to a request (comparable to
+    the view layer in web frameworks).
+    """
+
     async def handle(self, selector: str) -> Union[str, bytes, Menu]:
         """
         Receives a selector as a string, and returns the response as either a
@@ -28,7 +36,7 @@ class DirectoryHandler:
     def __init__(self, base_path: str):
         self.base_path = os.path.abspath(base_path)
 
-    async def handle(self, selector: str) -> Union[str, bytes]:
+    async def handle(self, selector: str) -> Union[str, bytes, Menu]:
         # Remove leading slash because os.path.join regards it as a full path
         # otherwise.
         if selector.startswith("/"):
@@ -57,14 +65,22 @@ class PatternHandler:
     def __init__(self):
         self.patterns = []
 
-    async def handle(self, selector: str) -> Union[str, bytes]:
+    async def handle(self, selector: str) -> Union[str, bytes, Menu]:
         for pattern, func in self.patterns:
             match = pattern.match(selector)
             if match:
                 return func(selector, **match.groupdict())
         raise NotFound
 
-    def register(self, pattern):
+    def register(self, pattern: str):
+        """
+        Decorator to register a view function.
+
+        .. note:: Patterns are compared in the order in which they were
+                  registered, so if a selector matches multiple patterns then
+                  the one which was registered first will 'win'.
+        """
+
         pattern = re.compile("^%s$" % pattern)
 
         def f(func):

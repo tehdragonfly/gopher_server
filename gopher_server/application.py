@@ -25,6 +25,9 @@ class Application:
     async def dispatch(self, selector: bytes) -> bytes:
         """
         Dispatches a request.
+
+        This is called by a listener, and in turn calls the `Application`'s
+        handler.
         """
 
         try:
