@@ -34,3 +34,13 @@ API Documentation
 
    .. autofunction:: quic_listener
 
+:mod:`gopher_server.menu`
+-------------------------
+
+.. automodule:: gopher_server.menu
+
+   .. autoclass:: Menu
+      :members:
+
+   .. autoclass:: MenuItem
+      :members:
