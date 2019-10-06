@@ -44,3 +44,6 @@ API Documentation
 
    .. autoclass:: MenuItem
       :members:
+
+   .. autoclass:: InfoMenuItem
+      :members:
