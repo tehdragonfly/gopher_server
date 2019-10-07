@@ -11,7 +11,10 @@ class Menu(list):
 
     def serialize(self) -> str:
         """Serialise and concatenate the contained items."""
-        return "\r\n".join(_.serialize() for _ in self)
+        return "\r\n".join(
+            (_ if isinstance(_, str) else _.serialize())
+            for _ in self
+        )
 
 
 @dataclass
