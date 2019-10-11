@@ -23,8 +23,8 @@ class IHandler(Interface):
     async def handle(self, selector: str) -> Union[str, bytes, Menu]:
         """
         Receives a selector as a string, and returns the response as either a
-        a string (for text responses), bytes (for binary responses), or a Menu
-        object.
+        a string (for text responses), bytes (for binary responses), or a
+        :class:`Menu <gopher_server.menu.Menu>` object.
         """
         pass
 
@@ -70,9 +70,9 @@ class PatternHandler:
     """
     Uses pattern matching to map selectors to view functions.
 
-    View functions can be registered by decorating them with
-    :func:`PatternHandler.register`. Requests with a selector matching the
-    pattern will then call that function. For example:
+    View functions can be registered by decorating them with the
+    :func:`register <PatternHandler.register>` method. Requests with a selector
+    matching the pattern will then call that function. For example:
 
     .. code-block::
 

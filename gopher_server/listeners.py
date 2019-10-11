@@ -11,6 +11,7 @@ from gopher_server.application import Application
 
 
 async def tcp_listener(application: Application, host: str, port: int):
+    """Basic unencrypted TCP listener."""
     async def handle_connection(reader, writer):
         data = await reader.readline()
         writer.write(await application.dispatch(data))
@@ -20,6 +21,7 @@ async def tcp_listener(application: Application, host: str, port: int):
 
 async def tcp_tls_listener(application: Application, host: str, port: int,
                            certificate_path: str, private_key_path: str, password: str=None):
+    """Gopher-over-TLS listener."""
     ssl_context = ssl.SSLContext(protocol=ssl.PROTOCOL_TLS)
     ssl_context.load_cert_chain(certificate_path, private_key_path, password)
     async def handle_connection(reader, writer):
@@ -32,6 +34,19 @@ async def tcp_tls_listener(application: Application, host: str, port: int,
 async def quic_listener(application: Application, host: str, port: int,
                         certificate_path: str, private_key_path: str, password: str=None,
                         quic_configuration_args=None):
+    """
+    Gopher-over-QUIC listener.
+
+    This uses the `aioquic <https://aioquic.readthedocs.io/>`_ library to
+    provide a QUIC connection.
+
+    The life-cycle of a QUIC connection is slightly different to a traditional
+    TCP connection due to the use of QUIC streams. Gopher-over-TCP only supports
+    one request per connection, however `quic_listener` supports one request
+    per *stream*, allowing clients to re-use the connection by creating a new
+    stream for each request.
+    """
+
     with open(certificate_path, "rb") as f:
         certificate = x509.load_pem_x509_certificate(
             f.read(), backend=default_backend(),
