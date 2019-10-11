@@ -32,8 +32,13 @@ release = "0.0"
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.intersphinx",
     "repoze.sphinx.autointerface",
 ]
+
+intersphinx_mapping = {
+    "aioquic": ("https://aioquic.readthedocs.io/en/latest/", None),
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

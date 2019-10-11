@@ -33,18 +33,21 @@ async def tcp_tls_listener(application: Application, host: str, port: int,
 
 async def quic_listener(application: Application, host: str, port: int,
                         certificate_path: str, private_key_path: str, password: str=None,
-                        quic_configuration_args=None):
+                        quic_configuration_args: dict=None):
     """
     Gopher-over-QUIC listener.
-
-    This uses the `aioquic <https://aioquic.readthedocs.io/>`_ library to
-    provide a QUIC connection.
 
     The life-cycle of a QUIC connection is slightly different to a traditional
     TCP connection due to the use of QUIC streams. Gopher-over-TCP only supports
     one request per connection, however `quic_listener` supports one request
-    per *stream*, allowing clients to re-use the connection by creating a new
+    per stream, allowing clients to re-use the connection by creating a new
     stream for each request.
+
+    `quic_listener` uses the `aioquic <https://aioquic.readthedocs.io/>`_
+    library to provide the QUIC connection. It uses a :class:`QuicConfiguration
+    <aioquic.quic.configuration.QuicConfiguration>` object to configure the
+    connection, and keyword arguments for this can be passed via the
+    `quic_connection_args` parameter.
     """
 
     with open(certificate_path, "rb") as f:
