@@ -1,5 +1,6 @@
-Welcome to gopher_server's documentation!
-=========================================
+gopher_server
+=============
+
 .. toctree::
    :hidden:
    :maxdepth: 2
@@ -8,17 +9,18 @@ Welcome to gopher_server's documentation!
    api
 
 `gopher_server` is a library for building `Gopher protocol <https://en.wikipedia.org/wiki/Gopher_(protocol)>`_
-servers. For maximum flexibility it takes a layered approach, separating the
-code for I/O, Gopher protocol semantics and generating responses.
+servers.
 
-To get started take a look at the examples below, or dive right into the
+For maximum flexibility it takes a layered approach, separating the code for
+I/O, Gopher protocol semantics and generating a response.
+
+To get started, take a look at the examples below, or dive right into the
 :doc:`API documentation <api>`.
 
 A simple Gopher server
 ----------------------
 
-This is an example of a server which serves static files from a given
-directory:
+Here's an example of a server which serves static files:
 
 .. code-block::
    :linenos:
@@ -50,6 +52,42 @@ the job of listening for connections is done by a *listener* function. On line
 14 we use the :func:`tcp_listener <gopher_server.listeners.tcp_listener>`,
 which listens for connections using an unencrypted TCP socket (as specified by
 the Gopher standard).
+
+Less simple Gopher servers
+--------------------------
+
+Alternative listeners
+~~~~~~~~~~~~~~~~~~~~~
+
+Whilst Gopher-over-TCP was a reasonable choice in 1993, the modern internet
+should be encrypted by default. As such this library provides a couple of
+non-standard listeners which have encryption:
+
+* :func:`tcp_tls_listener <gopher_server.listeners.tcp_tls_listener>` serves
+  Gopher-over-TLS. Though non-standard, there are many clients which support
+  using TLS for encryption.
+* :func:`quic_listener <gopher_server.listeners.quic_listener>` serves
+  Gopher-over-QUIC. As `the QUIC protocol
+  <https://en.wikipedia.org/wiki/QUIC>`_ is still new, client support for this
+  is currently almost non-existent.
+
+For hybrid servers it's easy to run multiple listeners with a single
+application:
+
+.. code-block::
+
+   if __name__ == "__main__":
+       loop = get_event_loop()
+       loop.create_task(tcp_listener(application, "0.0.0.0", 7000))
+       loop.create_task(tcp_tls_listener(
+           application, "0.0.0.0", 7001,
+           "server.crt", "key.pem",
+       ))
+       loop.create_task(quic_listener(
+           application, "0.0.0.0", 7000,
+           "server.crt", "key.pem",
+       ))
+       loop.run_forever()
 
 Indices and tables
 ==================
