@@ -68,11 +68,11 @@ class DirectoryHandler:
 @implementer(IHandler)
 class PatternHandler:
     """
-    Uses pattern matching to map selectors to view functions.
+    Uses regular expression matching to map selectors to view functions.
 
     View functions can be registered by decorating them with the
     :func:`register <PatternHandler.register>` method. Requests with a selector
-    matching the pattern will then call that function. For example:
+    matching the regex pattern will then call that function. For example:
 
     .. code-block::
 

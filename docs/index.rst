@@ -89,6 +89,46 @@ application:
        ))
        loop.run_forever()
 
+Alternative handlers
+~~~~~~~~~~~~~~~~~~~~
+
+The :class:`DirectoryHandler <gopher_server.handlers.DirectoryHandler>` is fine
+for static gophersites, but if you want to do something more complex (eg.
+loading content from a database) then more advanced options are available.
+
+The first option is to use the :class:`PatternHandler
+<gopher_server.handlers.PatternHandler>`. It works similarly to the router in
+web frameworks such as Flask and Django: *view functions* are registered against
+a regular expression pattern, and the relevant function is called when an
+incoming request has a matching selector.
+
+.. code-block::
+
+   handler = PatternHandler()
+
+   @handler.register("")
+   def home(selector):
+       return Menu([
+           InfoMenuItem("hello world example menu"),
+           MenuItem("0", "foo", "hello/foo", "localhost", 7000),
+           MenuItem("0", "bar", "hello/bar", "localhost", 7000),
+           MenuItem("0", "baz", "hello/baz", "localhost", 7000),
+       ])
+
+   @handler.register("hello/(?P<name>.+)")
+   def hello(selector, name):
+       return "hello %s" % name
+
+
+In the above example, an empty selector calls the `home` function, and selectors
+starting with "hello/" call the `hello` function with subsequent text in the
+`name` keyword argument. The `home` function also uses the :class:`Menu
+<gopher_server.menu.Menu>` class to build a gophermap.
+
+If neither of the built-in handlers are good enough for you, your second option
+is to create your own handler by implementing the :class:`IHandler
+<gopher_server.handlers.IHandler>` interface.
+
 Indices and tables
 ==================
 
