@@ -53,6 +53,12 @@ the job of listening for connections is done by a *listener* function. On line
 which listens for connections using an unencrypted TCP socket (as specified by
 the Gopher standard).
 
+If all you want to do is serve static files, you can do so by invoking the
+`gopher_server` package directly. This will serve files from the current
+directory::
+
+    python -m gopher_server
+
 Less simple Gopher servers
 --------------------------
 
