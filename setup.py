@@ -17,11 +17,13 @@ AUTHOR = "Olly Parton"
 REQUIRES_PYTHON = ">=3.7.0"
 VERSION = "0.1.0"
 
-INSTALL_REQUIRES = ["aioquic", "cryptography", "zope.interface"]
+INSTALL_REQUIRES = ["zope.interface"]
 
 TESTS_REQUIRE = ["pytest", "pytest-asyncio"]
 
-EXTRAS = {}
+EXTRAS = {
+    "quic": ["aioquic", "cryptography"]
+}
 
 here = os.path.abspath(os.path.dirname(__file__))
 

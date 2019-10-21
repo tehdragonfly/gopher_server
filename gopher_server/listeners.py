@@ -1,11 +1,14 @@
 import asyncio
 import ssl
 
-from aioquic.asyncio import serve
-from aioquic.quic.configuration import QuicConfiguration
-from cryptography import x509
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization
+try:
+    from aioquic.asyncio import serve
+    from aioquic.quic.configuration import QuicConfiguration
+    from cryptography import x509
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives import serialization
+except ImportError:
+    pass
 
 from gopher_server.application import Application
 
