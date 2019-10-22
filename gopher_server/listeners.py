@@ -7,8 +7,9 @@ try:
     from cryptography import x509
     from cryptography.hazmat.backends import default_backend
     from cryptography.hazmat.primitives import serialization
+    QUIC_ENABLED = True
 except ImportError:
-    pass
+    QUIC_ENABLED = False
 
 from gopher_server.application import Application
 
@@ -47,11 +48,22 @@ async def quic_listener(application: Application, host: str, port: int,
     stream for each request.
 
     `quic_listener` uses the `aioquic <https://aioquic.readthedocs.io/>`_
-    library to provide the QUIC connection. It uses a :class:`QuicConfiguration
+    library to provide the QUIC connection. To install `aioquic` you should
+    install `gopher_server` with the `quic` extras::
+
+        pip install gopher_server[quic]
+
+    It uses a :class:`QuicConfiguration
     <aioquic.quic.configuration.QuicConfiguration>` object to configure the
     connection, and keyword arguments for this can be passed via the
     `quic_connection_args` parameter.
     """
+
+    if not QUIC_ENABLED:
+        raise ImportError(
+            "Missing dependencies for the QUIC listener. "
+            "Please install the [quic] extras."
+        )
 
     with open(certificate_path, "rb") as f:
         certificate = x509.load_pem_x509_certificate(
