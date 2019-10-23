@@ -66,7 +66,7 @@ class UploadCommand(Command):
         os.system("twine upload dist/*")
 
         self.status("Pushing git tags…")
-        os.system("git tag v{0}".format(VERSION))
+        os.system("git tag {0}".format(VERSION))
         os.system("git push --tags")
 
         sys.exit()
@@ -83,7 +83,7 @@ setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    py_modules=["gopher_server"],
+    packages=["gopher_server"],
     install_requires=INSTALL_REQUIRES,
     tests_require=TESTS_REQUIRE,
     extras_require=EXTRAS,
