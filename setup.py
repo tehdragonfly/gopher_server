@@ -15,7 +15,7 @@ URL = "https://github.com/tehdragonfly/gopher_server"
 EMAIL = "mysticdragonfly@hotmail.co.uk"
 AUTHOR = "Olly Parton"
 REQUIRES_PYTHON = ">=3.7.0"
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 
 INSTALL_REQUIRES = ["zope.interface"]
 
