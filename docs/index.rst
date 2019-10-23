@@ -7,6 +7,7 @@ gopher_server
    :caption: Contents:
 
    api
+   versions
 
 `gopher_server` is a library for building `Gopher protocol <https://en.wikipedia.org/wiki/Gopher_(protocol)>`_
 servers.
