@@ -60,9 +60,12 @@ class DirectoryHandler:
         if not os.path.isfile(file_path):
             raise NotFound
 
-        # TODO read binary files as bytes
-        with open(file_path) as f:
-            return f.read()
+        with open(file_path, "rb") as f:
+            data = f.read()
+            try:
+                return data.decode("utf-8")
+            except UnicodeDecodeError:
+                return data
 
 
 @implementer(IHandler)
