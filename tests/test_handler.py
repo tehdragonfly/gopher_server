@@ -21,6 +21,14 @@ async def test_directory_handler_file(directory_handler: DirectoryHandler):
 
 
 @pytest.mark.asyncio
+async def test_directory_handler_binary(directory_handler: DirectoryHandler):
+    """Binary files are returned as bytes."""
+    response = await directory_handler.handle("image.png")
+    with open(os.path.join(BASE_PATH + "image.png"), "rb") as f:
+        assert response == f.read()
+
+
+@pytest.mark.asyncio
 async def test_directory_handler_directory(directory_handler: DirectoryHandler):
     """Directory name returns index file from the directory."""
     response = await directory_handler.handle("")
