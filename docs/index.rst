@@ -39,7 +39,7 @@ Here's an example of a server which serves static files:
 
    if __name__ == "__main__":
        loop = get_event_loop()
-       loop.create_task(tcp_listener(application, "0.0.0.0", 7000))
+       loop.create_task(tcp_listener(application, "localhost", "0.0.0.0", 7000))
        loop.run_forever()
 
 The :class:`Application <gopher_server.application.Application>` is initialised
@@ -85,13 +85,13 @@ application:
 
    if __name__ == "__main__":
        loop = get_event_loop()
-       loop.create_task(tcp_listener(application, "0.0.0.0", 7000))
+       loop.create_task(tcp_listener(application, "localhost", "0.0.0.0", 7000))
        loop.create_task(tcp_tls_listener(
-           application, "0.0.0.0", 7001,
+           application, "localhost", "0.0.0.0", 7001,
            "server.crt", "key.pem",
        ))
        loop.create_task(quic_listener(
-           application, "0.0.0.0", 7000,
+           application, "localhost", "0.0.0.0", 7000,
            "server.crt", "key.pem",
        ))
        loop.run_forever()
@@ -114,16 +114,16 @@ incoming request has a matching selector.
    handler = PatternHandler()
 
    @handler.register("")
-   def home(selector):
+   def home(request):
        return Menu([
            InfoMenuItem("hello world example menu"),
-           MenuItem("0", "foo", "hello/foo", "localhost", 7000),
-           MenuItem("0", "bar", "hello/bar", "localhost", 7000),
-           MenuItem("0", "baz", "hello/baz", "localhost", 7000),
+           MenuItem("0", "foo", "hello/foo", request.hostname, request.port),
+           MenuItem("0", "bar", "hello/bar", request.hostname, request.port),
+           MenuItem("0", "baz", "hello/baz", request.hostname, request.port),
        ])
 
    @handler.register("hello/(?P<name>.+)")
-   def hello(selector, name):
+   def hello(request, name):
        return "hello %s" % name
 
 

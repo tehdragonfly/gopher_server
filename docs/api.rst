@@ -23,6 +23,12 @@ API documentation
   .. autoclass:: PatternHandler
      :members:
 
+  .. autoclass:: Request
+     :members:
+
+  .. autoclass:: NotFound
+     :members:
+
 :mod:`gopher_server.listeners`
 ------------------------------
 

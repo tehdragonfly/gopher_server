@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from logging import getLogger
 
-from gopher_server.handlers import IHandler, NotFound
+from gopher_server.handlers import IHandler, NotFound, Request
 from gopher_server.menu import Menu
 
 log = getLogger(__name__)
@@ -22,12 +22,15 @@ class Application:
 
     handler: IHandler
 
-    async def dispatch(self, selector: bytes) -> bytes:
+    async def dispatch(self, hostname: str, port: int, selector: bytes) -> bytes:
         """
         Dispatches a request.
 
         This is called by a listener, and in turn calls the `Application`'s
-        handler.
+        handler. The hostname and port are passed through in a
+        :class:`Request <gopher_server.handlers.Request>` object so that
+        handlers which generate a menu can include the right values for local
+        selectors.
         """
 
         try:
@@ -40,8 +43,10 @@ class Application:
         if "\t" in decoded_selector or "\r" in decoded_selector or "\n" in decoded_selector:
             return b"3Bad selector.\t\terror.host\t0\r\n.\r\n"
 
+        request = Request(hostname, port, decoded_selector)
+
         try:
-            response = await self.handler.handle(decoded_selector)
+            response = await self.handler.handle(request)
         except NotFound:
             return b"3Not found.\t\terror.host\t0\r\n.\r\n"
         except Exception as e:

@@ -14,38 +14,36 @@ except ImportError:
 from gopher_server.application import Application
 
 
-async def tcp_listener(application: Application, host: str, port: int):
+async def tcp_listener(application: Application, hostname: str, host: str, port: int):
     """Basic unencrypted TCP listener."""
+
     async def handle_connection(reader, writer):
         data = await reader.readline()
-        writer.write(await application.dispatch(data))
+        writer.write(await application.dispatch(hostname, port, data))
         writer.write_eof()
+
     await asyncio.start_server(handle_connection, host, port)
 
 
-async def tcp_tls_listener(application: Application, host: str, port: int,
+async def tcp_tls_listener(application: Application, hostname: str, host: str, port: int,
                            certificate_path: str, private_key_path: str, password: str=None):
     """Gopher-over-TLS listener."""
     ssl_context = ssl.SSLContext(protocol=ssl.PROTOCOL_TLS)
     ssl_context.load_cert_chain(certificate_path, private_key_path, password)
+
     async def handle_connection(reader, writer):
         data = await reader.readline()
-        writer.write(await application.dispatch(data))
+        writer.write(await application.dispatch(hostname, port, data))
         writer.write_eof()
+
     await asyncio.start_server(handle_connection, host, port, ssl=ssl_context)
 
 
-async def quic_listener(application: Application, host: str, port: int,
+async def quic_listener(application: Application, hostname: str, host: str, port: int,
                         certificate_path: str, private_key_path: str, password: str=None,
                         quic_configuration_args: dict=None):
     """
     Gopher-over-QUIC listener.
-
-    The life-cycle of a QUIC connection is slightly different to a traditional
-    TCP connection due to the use of QUIC streams. Gopher-over-TCP only supports
-    one request per connection, however `quic_listener` supports one request
-    per stream, allowing clients to re-use the connection by creating a new
-    stream for each request.
 
     `quic_listener` uses the `aioquic <https://aioquic.readthedocs.io/>`_
     library to provide the QUIC connection. To install `aioquic` you should
@@ -57,6 +55,12 @@ async def quic_listener(application: Application, host: str, port: int,
     <aioquic.quic.configuration.QuicConfiguration>` object to configure the
     connection, and keyword arguments for this can be passed via the
     `quic_connection_args` parameter.
+
+    The life-cycle of a QUIC connection is slightly different to a traditional
+    TCP connection due to the use of QUIC streams. Gopher-over-TCP only supports
+    one request per connection, however `quic_listener` supports one request
+    per stream, allowing clients to re-use the connection by creating a new
+    stream for each request.
     """
 
     if not QUIC_ENABLED:
@@ -84,7 +88,7 @@ async def quic_listener(application: Application, host: str, port: int,
     def stream_handler(reader, writer):
         async def handle_stream():
             data = await reader.read()
-            writer.write(await application.dispatch(data))
+            writer.write(await application.dispatch(hostname, port, data))
             writer.write_eof()
         asyncio.ensure_future(handle_stream())
 

@@ -1,10 +1,18 @@
 import os.path
 import re
 
+from dataclasses import dataclass
 from typing import Union
 from zope.interface import Interface, implementer
 
 from gopher_server.menu import Menu
+
+
+@dataclass
+class Request:
+    hostname: str
+    port:     int
+    selector: str
 
 
 class NotFound(Exception):
@@ -20,11 +28,13 @@ class IHandler(Interface):
     the view layer in web frameworks).
     """
 
-    async def handle(self, selector: str) -> Union[str, bytes, Menu]:
+    async def handle(self, request: Request) -> Union[str, bytes, Menu]:
         """
-        Receives a selector as a string, and returns the response as either a
-        a string (for text responses), bytes (for binary responses), or a
-        :class:`Menu <gopher_server.menu.Menu>` object.
+        Receives a :class:`Request <gopher_server.handlers.Request>` object,
+        and returns the response as either a string (for text responses), bytes
+        (for binary responses), or a :class:`Menu <gopher_server.menu.Menu>`
+        object. May also raise
+        :class:`NotFound <gopher_server.handlers.NotFound>`.
         """
         pass
 
@@ -41,7 +51,9 @@ class DirectoryHandler:
     def __init__(self, base_path: str):
         self.base_path = os.path.abspath(base_path)
 
-    async def handle(self, selector: str) -> Union[str, bytes, Menu]:
+    async def handle(self, request: Request) -> Union[str, bytes, Menu]:
+        selector = request.selector
+
         # Remove leading slash because os.path.join regards it as a full path
         # otherwise.
         if selector.startswith("/"):
@@ -80,8 +92,8 @@ class PatternHandler:
     .. code-block::
 
        @handler.register("hello/.+")
-       def hello(selector):
-           return "hello %s" % selector[6:]
+       def hello(request):
+           return "hello %s" % request.selector[6:]
 
     Named capturing groups will be passed to the function as keyword
     arguments:
@@ -89,22 +101,22 @@ class PatternHandler:
     .. code-block::
 
        @handler.register("hello/(?P<name>.+)")
-       def hello(selector, name):
+       def hello(request, name):
            return "hello %s" % name
 
     .. note:: Patterns are compared in the order in which they were
               registered, so if the selector matches multiple patterns then
-              the one which was registered first will 'win'.
+              the one which was registered first will "win".
     """
 
     def __init__(self):
         self.patterns = []
 
-    async def handle(self, selector: str) -> Union[str, bytes, Menu]:
+    async def handle(self, request: Request) -> Union[str, bytes, Menu]:
         for pattern, func in self.patterns:
-            match = pattern.match(selector)
+            match = pattern.match(request.selector)
             if match:
-                return func(selector, **match.groupdict())
+                return func(request, **match.groupdict())
         raise NotFound
 
     def register(self, pattern: str):

@@ -10,6 +10,6 @@ application = Application(handler)
 
 
 loop = get_event_loop()
-loop.create_task(tcp_listener(application, "0.0.0.0", 7000))
+loop.create_task(tcp_listener(application, "localhost", "0.0.0.0", 7000))
 print("Serving on 0.0.0.0 port 7000...")
 loop.run_forever()
