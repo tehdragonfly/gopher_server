@@ -2,6 +2,7 @@ import os.path
 import re
 
 from dataclasses import dataclass
+from inspect import iscoroutinefunction
 from typing import Union
 from zope.interface import Interface, implementer
 
@@ -116,6 +117,8 @@ class PatternHandler:
         for pattern, func in self.patterns:
             match = pattern.match(request.selector)
             if match:
+                if iscoroutinefunction(func):
+                    return await func(request, **match.groupdict())
                 return func(request, **match.groupdict())
         raise NotFound
 
