@@ -6,7 +6,7 @@ from inspect import iscoroutinefunction
 from typing import Union
 from zope.interface import Interface, implementer
 
-from gopher_server.menu import Menu
+from gopher_server.menu import Menu, MenuItem
 
 
 @dataclass
@@ -49,8 +49,9 @@ class DirectoryHandler:
               for a file called `index` in that directory.
     """
 
-    def __init__(self, base_path: str):
+    def __init__(self, base_path: str, generate_menus=False):
         self.base_path = os.path.abspath(base_path)
+        self.generate_menus = generate_menus
 
     async def handle(self, request: Request) -> Union[str, bytes, Menu]:
         selector = request.selector
@@ -66,9 +67,19 @@ class DirectoryHandler:
         if not file_path.startswith(self.base_path):
             raise NotFound
 
-        # TODO directory listing
         if os.path.isdir(file_path):
-            file_path = os.path.join(file_path, "index")
+            if self.generate_menus:
+                return Menu([
+                    MenuItem(
+                        "1" if os.path.isdir(os.path.join(file_path, item)) else "0",
+                        os.path.join(selector, item),
+                        os.path.join(selector, item),
+                        request.hostname, request.port,
+                    )
+                    for item in os.listdir(file_path)
+                ])
+            else:
+                file_path = os.path.join(file_path, "index")
 
         if not os.path.isfile(file_path):
             raise NotFound
