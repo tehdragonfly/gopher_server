@@ -72,9 +72,10 @@ class DirectoryHandler:
                 return Menu([
                     MenuItem(
                         "1" if os.path.isdir(os.path.join(file_path, item)) else "0",
+                        item,
                         os.path.join(selector, item),
-                        os.path.join(selector, item),
-                        request.hostname, request.port,
+                        request.hostname,
+                        request.port,
                     )
                     for item in os.listdir(file_path)
                 ])
