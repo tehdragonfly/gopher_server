@@ -77,7 +77,7 @@ class DirectoryHandler:
                         request.hostname,
                         request.port,
                     )
-                    for item in os.listdir(file_path)
+                    for item in sorted(os.listdir(file_path))
                 ])
             else:
                 file_path = os.path.join(file_path, "index")
