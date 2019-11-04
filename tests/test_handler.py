@@ -61,6 +61,15 @@ async def test_directory_handler_with_menus(directory_handler_with_menus: Direct
     ])
 
 
+@pytest.mark.asyncio
+async def test_directory_handler_with_menus_subdirectory(directory_handler_with_menus: DirectoryHandler):
+    """Directory handler with generate_menus generates its own menu."""
+    response = await directory_handler_with_menus.handle(Request("localhost", 7000, "test"))
+    assert response == Menu([
+        MenuItem("0", "lol", "test/lol", "localhost", 7000),
+    ])
+
+
 @pytest.fixture
 def pattern_handler() -> PatternHandler:
     handler = PatternHandler()
