@@ -40,6 +40,23 @@ class IHandler(Interface):
         pass
 
 
+def _menu_from_directory(request, path):
+    menu = Menu()
+
+    for name in sorted(os.listdir(path)):
+        # TODO mime type detection
+        item_type = "1" if os.path.isdir(os.path.join(path, name)) else "0"
+        menu.append(MenuItem(
+            item_type,
+            name,
+            os.path.join(request.selector, name),
+            request.hostname,
+            request.port,
+        ))
+
+    return menu
+
+
 @implementer(IHandler)
 class DirectoryHandler:
     """
@@ -69,16 +86,7 @@ class DirectoryHandler:
 
         if os.path.isdir(file_path):
             if self.generate_menus:
-                return Menu([
-                    MenuItem(
-                        "1" if os.path.isdir(os.path.join(file_path, item)) else "0",
-                        item,
-                        os.path.join(selector, item),
-                        request.hostname,
-                        request.port,
-                    )
-                    for item in sorted(os.listdir(file_path))
-                ])
+                return _menu_from_directory(request, file_path)
             else:
                 file_path = os.path.join(file_path, "index")
 
