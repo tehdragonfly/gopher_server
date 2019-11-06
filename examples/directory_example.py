@@ -5,7 +5,7 @@ from gopher_server.handlers import DirectoryHandler
 from gopher_server.listeners import tcp_listener, tcp_tls_listener, quic_listener
 
 
-handler = DirectoryHandler("data")
+handler = DirectoryHandler("data", generate_menus=True)
 application = Application(handler)
 
 

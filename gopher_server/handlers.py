@@ -1,6 +1,12 @@
 import os.path
 import re
 
+try:
+    import filetype
+    FILETYPE_ENABLED = True
+except ImportError:
+    FILETYPE_ENABLED = False
+
 from dataclasses import dataclass
 from inspect import iscoroutinefunction
 from typing import Union
@@ -40,14 +46,30 @@ class IHandler(Interface):
         pass
 
 
+def _file_type(path):
+    if os.path.isdir(path):
+        return "1"
+    if not FILETYPE_ENABLED:
+        return "0" # text
+    kind = filetype.guess(path)
+    if kind is None:
+        return "0" # text
+    if kind.mime == "image/gif":
+        return "g"
+    if kind.mime.startswith("image/"):
+        return "I"
+    if kind.mime.startswith("audio/"):
+        return "s"
+    return "9" # binary
+
+
 def _menu_from_directory(request, path):
     menu = Menu()
 
     for name in sorted(os.listdir(path)):
-        # TODO mime type detection
-        item_type = "1" if os.path.isdir(os.path.join(path, name)) else "0"
+        file_type = _file_type(os.path.join(path, name))
         menu.append(MenuItem(
-            item_type,
+            file_type,
             name,
             os.path.join(request.selector, name),
             request.hostname,
@@ -62,8 +84,16 @@ class DirectoryHandler:
     """
     Serves files from a directory, as specified by `base_path`.
 
-    .. note:: If the selector matches the name of a directory, this will look
-              for a file called `index` in that directory.
+    If the selector matches the name of a directory, this will look for a file
+    called `index` in that directory and serve that.
+
+    Setting the `generate_menus` argument to `True` will instead serve an
+    automatically generated menu listing all the files in the directory. This
+    uses the `filetype` library for type detection, which you can install using
+    the `automenu` extras::
+
+        pip install gopher_server[automenu]
+
     """
 
     def __init__(self, base_path: str, generate_menus=False):

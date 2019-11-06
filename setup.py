@@ -22,7 +22,8 @@ INSTALL_REQUIRES = ["zope.interface"]
 TESTS_REQUIRE = ["pytest", "pytest-asyncio"]
 
 EXTRAS = {
-    "quic": ["aioquic", "cryptography"]
+    "automenu": ["filetype"],
+    "quic":     ["aioquic", "cryptography"],
 }
 
 here = os.path.abspath(os.path.dirname(__file__))
