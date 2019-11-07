@@ -1,6 +1,19 @@
 Version history
 ===============
 
+0.3.0
+-----
+
+*8th November 2019*
+
+* Replaced the `selector` argument given to handlers with a
+  :class:`Request <gopher_server.handlers.Request>` object. This allows the
+  handler to know the hostname and port number to use for local links in menus.
+* `DirectoryHandler`: Added functionality to automatically generate menus for
+  subdirectories.
+* `PatternHandler`: Added support for both synchronous and async view
+  functions.
+
 0.2.0
 -----
 
