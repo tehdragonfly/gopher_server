@@ -6,7 +6,8 @@ class Menu(list):
     Convenience class for building menus.
 
     This is a list wrapper which serialises and concatenates any
-    :class:`MenuItem`\ s and :class:`InfoMenuItem`\ s contained within.
+    :class:`MenuItem`\ s, :class:`InfoMenuItem`\ s and strings contained
+    within.
     """
 
     def serialize(self) -> str:
