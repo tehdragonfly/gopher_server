@@ -87,6 +87,12 @@ def pattern_handler() -> PatternHandler:
         assert not_arg is None
         return "dynamic response for " + arg
 
+    @handler.register("async_view")
+    async def async_view(request):
+        """Handler supports async functions."""
+        assert request.selector == "async_view"
+        return "async view response"
+
     return handler
 
 
@@ -100,6 +106,12 @@ async def test_pattern_handler_static(pattern_handler: PatternHandler):
 async def test_pattern_handler_dynamic(pattern_handler: PatternHandler):
     response = await pattern_handler.handle(Request("localhost", 7000, "dynamic_pattern/foo"))
     assert response == "dynamic response for foo"
+
+
+@pytest.mark.asyncio
+async def test_pattern_handler_async(pattern_handler: PatternHandler):
+    response = await pattern_handler.handle(Request("localhost", 7000, "async_view"))
+    assert response == "async view response"
 
 
 @pytest.mark.asyncio
