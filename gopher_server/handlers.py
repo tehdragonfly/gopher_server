@@ -9,10 +9,13 @@ except ImportError:
 
 from dataclasses import dataclass
 from inspect import iscoroutinefunction
+from logging import getLogger
 from typing import Union
 from zope.interface import Interface, implementer
 
 from gopher_server.menu import Menu, MenuItem
+
+log = getLogger(__name__)
 
 
 @dataclass
@@ -50,6 +53,10 @@ def _file_type(path):
     if os.path.isdir(path):
         return "1"
     if not FILETYPE_ENABLED:
+        log.warn(
+            "The filetype dependency is not installed. "
+            "Defaulting to 0 (text)."
+        )
         return "0" # text
     kind = filetype.guess(path)
     if kind is None:
