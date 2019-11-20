@@ -1,11 +1,17 @@
 from asyncio import get_event_loop
+from sys import argv
 
 from gopher_server.application import Application
 from gopher_server.handlers import DirectoryHandler
 from gopher_server.listeners import tcp_listener
 
 
-handler = DirectoryHandler(".")
+if len(argv) > 1:
+    base_path = argv[1]
+else:
+    base_path = "."
+
+handler = DirectoryHandler(base_path)
 application = Application(handler)
 
 
