@@ -1,17 +1,17 @@
+from argparse import ArgumentParser
 from asyncio import get_event_loop
-from sys import argv
 
 from gopher_server.application import Application
 from gopher_server.handlers import DirectoryHandler
 from gopher_server.listeners import tcp_listener
 
 
-if len(argv) > 1:
-    base_path = argv[1]
-else:
-    base_path = "."
+parser = ArgumentParser("gopher_server")
+parser.add_argument("base_path", nargs="?", default=".")
+args = parser.parse_args()
 
-handler = DirectoryHandler(base_path)
+
+handler = DirectoryHandler(args.base_path)
 application = Application(handler)
 
 
