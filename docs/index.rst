@@ -60,6 +60,10 @@ directory::
 
     python -m gopher_server
 
+It also accepts an argument for a specific directory::
+
+    python -m gopher_server /path/to/data
+
 Less simple Gopher servers
 --------------------------
 
