@@ -1,6 +1,13 @@
 Version history
 ===============
 
+0.4.0
+-----
+
+*24th November 2019*
+
+* Updated main script to accept a specific path to serve files from.
+
 0.3.0
 -----
 
