@@ -101,6 +101,9 @@ class DirectoryHandler:
 
         pip install gopher_server[automenu]
 
+    If `filetype` is not installed then all file entries will have type `0`
+    (text).
+
     """
 
     def __init__(self, base_path: str, generate_menus=False):
